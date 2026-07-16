@@ -49,7 +49,7 @@ public class ResearcherController {
                 HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}")    
     public ResponseEntity<ApiResponse<ResearcherResponse>> update(
             @PathVariable Long id,
             @RequestBody ResearcherRequest request) {

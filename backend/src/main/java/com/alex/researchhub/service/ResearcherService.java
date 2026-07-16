@@ -2,7 +2,6 @@ package com.alex.researchhub.service;
 
 import com.alex.researchhub.dto.ResearcherRequest;
 import com.alex.researchhub.dto.*;
-// import com.alex.researchhub.researcher.dto.*;
 
 import java.util.List;
 
@@ -15,7 +14,7 @@ public interface ResearcherService {
     List<ResearcherResponse> getAllResearchers();
 
     ResearcherResponse updateResearcher(Long id,
-                                        ResearcherRequest request);
+            ResearcherRequest request);
 
     void deleteResearcher(Long id);
 

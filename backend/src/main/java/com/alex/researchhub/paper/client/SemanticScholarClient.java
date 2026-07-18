@@ -13,8 +13,11 @@ import com.alex.researchhub.paper.dto.CitationDto;
 import com.alex.researchhub.paper.dto.PaperDetailsResponse;
 import com.alex.researchhub.paper.dto.PaperResponse;
 import com.alex.researchhub.paper.dto.ReferenceDto;
+import com.alex.researchhub.paper.dto.TrendingResponse;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -208,65 +211,277 @@ public class SemanticScholarClient implements PaperClient {
                 .build();
     }
 
-
     @Override
-public List<AuthorResponse> searchAuthors(String name) {
+    public List<AuthorResponse> searchAuthors(String name) {
 
-    Map<String, Object> response =
-            restClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                            .path("/author/search")
-                            .queryParam("query", name)
-                            .queryParam("limit", 10)
-                            .queryParam(
-                                    "fields",
-                                    "authorId,name,affiliations,paperCount,citationCount,hIndex,homepage"
-                            )
-                            .build())
-                    .retrieve()
-                    .body(new ParameterizedTypeReference<Map<String, Object>>() {
-                    });
+        Map<String, Object> response = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/author/search")
+                        .queryParam("query", name)
+                        .queryParam("limit", 10)
+                        .queryParam(
+                                "fields",
+                                "authorId,name,affiliations,paperCount,citationCount,hIndex,homepage")
+                        .build())
+                .retrieve()
+                .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                });
 
-    List<AuthorResponse> authors = new ArrayList<>();
+        List<AuthorResponse> authors = new ArrayList<>();
 
-    if (response == null) {
-        return authors;
-    }
-
-    List<Map<String, Object>> data =
-            (List<Map<String, Object>>) response.get("data");
-
-    if (data == null) {
-        return authors;
-    }
-
-    for (Map<String, Object> author : data) {
-
-        String affiliation = null;
-
-        Object affiliations = author.get("affiliations");
-
-        if (affiliations instanceof List<?> list && !list.isEmpty()) {
-            affiliation = String.valueOf(list.get(0));
+        if (response == null) {
+            return authors;
         }
 
-        authors.add(
-                AuthorResponse.builder()
-                        .authorId(String.valueOf(author.get("authorId")))
-                        .name(String.valueOf(author.get("name")))
-                        .affiliation(affiliation)
-                        .paperCount((Integer) author.get("paperCount"))
-                        .citationCount((Integer) author.get("citationCount"))
-                        .hIndex((Integer) author.get("hIndex"))
-                        .homepage(
-                                author.get("homepage") == null
-                                        ? null
-                                        : String.valueOf(author.get("homepage")))
-                        .build());
+        List<Map<String, Object>> data = (List<Map<String, Object>>) response.get("data");
+
+        if (data == null) {
+            return authors;
+        }
+
+        for (Map<String, Object> author : data) {
+
+            String affiliation = null;
+
+            Object affiliations = author.get("affiliations");
+
+            if (affiliations instanceof List<?> list && !list.isEmpty()) {
+                affiliation = String.valueOf(list.get(0));
+            }
+
+            authors.add(
+                    AuthorResponse.builder()
+                            .authorId(String.valueOf(author.get("authorId")))
+                            .name(String.valueOf(author.get("name")))
+                            .affiliation(affiliation)
+                            .paperCount((Integer) author.get("paperCount"))
+                            .citationCount((Integer) author.get("citationCount"))
+                            .hIndex((Integer) author.get("hIndex"))
+                            .homepage(
+                                    author.get("homepage") == null
+                                            ? null
+                                            : String.valueOf(author.get("homepage")))
+                            .build());
+
+        }
+
+        return authors;
 
     }
 
-    return authors;
+    private List<PaperResponse> getRecentPapers(String topic) {
 
-}
+        Map<String, Object> response = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/paper/search")
+                        .queryParam("query", topic)
+                        .queryParam("limit", 10)
+                        .queryParam(
+                                "fields",
+                                "paperId,title,abstract,year,citationCount,url,authors,externalIds")
+                        .build())
+                .retrieve()
+                .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                });
+
+        if (response == null) {
+            return Collections.emptyList();
+        }
+
+        List<Map<String, Object>> data = (List<Map<String, Object>>) response.get("data");
+
+        List<PaperResponse> papers = new ArrayList<>();
+
+        if (data == null) {
+            return papers;
+        }
+
+        for (Map<String, Object> paper : data) {
+
+            List<AuthorDto> authors = new ArrayList<>();
+
+            List<Map<String, Object>> authorData = (List<Map<String, Object>>) paper.get("authors");
+
+            if (authorData != null) {
+
+                for (Map<String, Object> author : authorData) {
+
+                    authors.add(
+                            AuthorDto.builder()
+                                    .authorId(String.valueOf(author.get("authorId")))
+                                    .name(String.valueOf(author.get("name")))
+                                    .build());
+
+                }
+
+            }
+
+            String doi = null;
+
+            if (paper.get("externalIds") != null) {
+
+                Map<String, Object> ids = (Map<String, Object>) paper.get("externalIds");
+
+                doi = ids.get("DOI") == null
+                        ? null
+                        : String.valueOf(ids.get("DOI"));
+
+            }
+
+            papers.add(
+                    PaperResponse.builder()
+                            .paperId(String.valueOf(paper.get("paperId")))
+                            .title(String.valueOf(paper.get("title")))
+                            .abstractText(String.valueOf(paper.get("abstract")))
+                            .year((Integer) paper.get("year"))
+                            .citationCount((Integer) paper.get("citationCount"))
+                            .doi(doi)
+                            .url(String.valueOf(paper.get("url")))
+                            .authors(authors)
+                            .build());
+
+        }
+
+        return papers;
+
+    }
+
+    @Override
+    public List<PaperResponse> getLatestAIPapers() {
+
+        return getRecentPapers("Artificial Intelligence");
+
+    }
+
+    @Override
+    public List<PaperResponse> getLatestCyberSecurityPapers() {
+
+        return getRecentPapers("Cyber Security");
+
+    }
+
+    @Override
+    public List<PaperResponse> getLatestCloudPapers() {
+
+        return getRecentPapers("Cloud Computing");
+
+    }
+
+    private List<PaperResponse> getMostCitedPapers() {
+
+        Map<String, Object> response = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/paper/search")
+                        .queryParam("query",
+                                "Artificial Intelligence")
+                        .queryParam("limit", 10)
+                        .queryParam(
+                                "fields",
+                                "paperId,title,abstract,year,citationCount,url,authors,externalIds")
+                        .build())
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {
+                });
+
+        if (response == null) {
+
+            return Collections.emptyList();
+
+        }
+
+        List<Map<String, Object>> data = (List<Map<String, Object>>) response.get("data");
+
+        List<PaperResponse> papers = new ArrayList<>();
+
+        if (data == null) {
+
+            return papers;
+
+        }
+
+        for (Map<String, Object> paper : data) {
+
+            List<AuthorDto> authors = new ArrayList<>();
+
+            List<Map<String, Object>> authorData = (List<Map<String, Object>>) paper.get("authors");
+
+            if (authorData != null) {
+
+                for (Map<String, Object> author : authorData) {
+
+                    authors.add(
+                            AuthorDto.builder()
+                                    .authorId(
+                                            String.valueOf(author.get("authorId")))
+                                    .name(
+                                            String.valueOf(author.get("name")))
+                                    .build());
+
+                }
+
+            }
+
+            String doi = null;
+
+            if (paper.get("externalIds") != null) {
+
+                Map<String, Object> ids = (Map<String, Object>) paper.get("externalIds");
+
+                doi = ids.get("DOI") == null
+                        ? null
+                        : String.valueOf(ids.get("DOI"));
+
+            }
+
+            papers.add(
+                    PaperResponse.builder()
+                            .paperId(
+                                    String.valueOf(paper.get("paperId")))
+                            .title(
+                                    String.valueOf(paper.get("title")))
+                            .abstractText(
+                                    String.valueOf(paper.get("abstract")))
+                            .year(
+                                    (Integer) paper.get("year"))
+                            .citationCount(
+                                    (Integer) paper.get("citationCount"))
+                            .doi(doi)
+                            .url(
+                                    String.valueOf(paper.get("url")))
+                            .authors(authors)
+                            .build());
+
+        }
+
+        papers.sort(
+                Comparator.comparing(
+                        PaperResponse::getCitationCount)
+                        .reversed());
+
+        return papers;
+
+    }
+
+    @Override
+    public TrendingResponse getTrendingResearch() {
+
+        List<PaperResponse> papers = getMostCitedPapers();
+
+        List<AuthorResponse> authors = searchAuthors("Artificial Intelligence");
+
+        List<String> topics = List.of(
+                "Artificial Intelligence",
+                "Machine Learning",
+                "Large Language Models",
+                "Computer Vision",
+                "Cyber Security",
+                "Cloud Computing");
+
+        return TrendingResponse.builder()
+                .mostCitedPapers(papers)
+                .popularAuthors(authors)
+                .trendingTopics(topics)
+                .build();
+
+    }
 }

@@ -10,6 +10,7 @@ import com.alex.researchhub.paper.dto.CrossrefResponse;
 import com.alex.researchhub.paper.dto.DoiRequest;
 import com.alex.researchhub.paper.dto.PaperDetailsResponse;
 import com.alex.researchhub.paper.dto.PaperResponse;
+import com.alex.researchhub.paper.dto.TrendingResponse;
 import com.alex.researchhub.repository.ProjectRepository;
 import com.alex.researchhub.repository.PublicationRepository;
 import com.alex.researchhub.repository.ResearcherRepository;
@@ -29,7 +30,6 @@ public class PaperServiceImpl implements PaperService {
     private final PublicationRepository publicationRepository;
     private final ProjectRepository projectRepository;
     private final ResearcherRepository researcherRepository;
-
 
     @Override
     public List<PaperResponse> searchPapers(String query) {
@@ -75,6 +75,34 @@ public class PaperServiceImpl implements PaperService {
                 .build();
 
         publicationRepository.save(publication);
+
+    }
+
+    @Override
+    public List<PaperResponse> getLatestAIPapers() {
+
+        return paperClient.getLatestAIPapers();
+
+    }
+
+    @Override
+    public List<PaperResponse> getLatestCyberSecurityPapers() {
+
+        return paperClient.getLatestCyberSecurityPapers();
+
+    }
+
+    @Override
+    public List<PaperResponse> getLatestCloudPapers() {
+
+        return paperClient.getLatestCloudPapers();
+
+    }
+
+    @Override
+    public TrendingResponse getTrendingResearch() {
+
+        return paperClient.getTrendingResearch();
 
     }
 }

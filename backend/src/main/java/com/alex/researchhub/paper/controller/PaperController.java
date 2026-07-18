@@ -4,6 +4,7 @@ import com.alex.researchhub.paper.dto.AuthorResponse;
 import com.alex.researchhub.paper.dto.DoiRequest;
 import com.alex.researchhub.paper.dto.PaperDetailsResponse;
 import com.alex.researchhub.paper.dto.PaperResponse;
+import com.alex.researchhub.paper.dto.TrendingResponse;
 import com.alex.researchhub.paper.service.PaperService;
 import com.alex.researchhub.service.publication.PublicationService;
 
@@ -51,5 +52,31 @@ public class PaperController {
 
     }
 
+    @GetMapping("/feed/ai")
+    public List<PaperResponse> latestAI() {
 
+        return paperService.getLatestAIPapers();
+
+    }
+
+    @GetMapping("/feed/cybersecurity")
+    public List<PaperResponse> latestCyberSecurity() {
+
+        return paperService.getLatestCyberSecurityPapers();
+
+    }
+
+    @GetMapping("/feed/cloud")
+    public List<PaperResponse> latestCloud() {
+
+        return paperService.getLatestCloudPapers();
+
+    }
+
+    @GetMapping("/trending")
+    public TrendingResponse getTrendingResearch() {
+
+        return paperService.getTrendingResearch();
+
+    }
 }

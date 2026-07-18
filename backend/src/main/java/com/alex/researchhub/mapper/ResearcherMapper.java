@@ -1,7 +1,8 @@
 package com.alex.researchhub.mapper;
 
 // import com.alex.researchhub.researcher.dto.*;
-import com.alex.researchhub.dto.*;
+import com.alex.researchhub.dto.researcher.ResearcherRequest;
+import com.alex.researchhub.dto.researcher.ResearcherResponse;
 import com.alex.researchhub.entity.Researcher;
 
 public class ResearcherMapper {

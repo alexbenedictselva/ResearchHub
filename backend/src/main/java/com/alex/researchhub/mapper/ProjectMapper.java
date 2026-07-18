@@ -1,7 +1,7 @@
 package com.alex.researchhub.mapper;
 
-import com.alex.researchhub.dto.ProjectRequest;
-import com.alex.researchhub.dto.ProjectResponse;
+import com.alex.researchhub.dto.project.ProjectRequest;
+import com.alex.researchhub.dto.project.ProjectResponse;
 import com.alex.researchhub.entity.Project;
 
 public class ProjectMapper {

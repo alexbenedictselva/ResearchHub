@@ -1,4 +1,4 @@
-package com.alex.researchhub.service;
+package com.alex.researchhub.service.project;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,8 @@ import javax.management.RuntimeErrorException;
 
 import org.springframework.stereotype.Service;
 
-import com.alex.researchhub.dto.ProjectRequest;
-import com.alex.researchhub.dto.ProjectResponse;
+import com.alex.researchhub.dto.project.ProjectRequest;
+import com.alex.researchhub.dto.project.ProjectResponse;
 import com.alex.researchhub.entity.Project;
 import com.alex.researchhub.entity.Researcher;
 import com.alex.researchhub.mapper.ProjectMapper;

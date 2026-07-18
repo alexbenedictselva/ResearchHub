@@ -1,4 +1,4 @@
-package com.alex.researchhub.dto;
+package com.alex.researchhub.dto.researcher;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

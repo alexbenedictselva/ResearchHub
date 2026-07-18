@@ -1,6 +1,7 @@
-package com.alex.researchhub.service;
+package com.alex.researchhub.service.researcher;
 
-import com.alex.researchhub.dto.*;
+import com.alex.researchhub.dto.researcher.ResearcherRequest;
+import com.alex.researchhub.dto.researcher.ResearcherResponse;
 import com.alex.researchhub.entity.Researcher;
 import com.alex.researchhub.mapper.ResearcherMapper;
 import com.alex.researchhub.repository.ResearcherRepository;

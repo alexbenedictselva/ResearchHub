@@ -1,4 +1,4 @@
-package com.alex.researchhub.dto;
+package com.alex.researchhub.dto.researcher;
 
 import lombok.Builder;
 import lombok.Data;

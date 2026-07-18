@@ -2,9 +2,9 @@ package com.alex.researchhub.controller;
 
 import com.alex.researchhub.common.response.ApiResponse;
 import com.alex.researchhub.common.response.ResponseBuilder;
-import com.alex.researchhub.dto.ResearcherRequest;
-import com.alex.researchhub.dto.ResearcherResponse;
-import com.alex.researchhub.service.ResearcherService;
+import com.alex.researchhub.dto.researcher.ResearcherRequest;
+import com.alex.researchhub.dto.researcher.ResearcherResponse;
+import com.alex.researchhub.service.researcher.ResearcherService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

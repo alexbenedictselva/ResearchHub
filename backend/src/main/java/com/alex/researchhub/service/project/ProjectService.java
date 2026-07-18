@@ -1,9 +1,9 @@
-package com.alex.researchhub.service;
+package com.alex.researchhub.service.project;
 
 import java.util.List;
 
-import com.alex.researchhub.dto.ProjectRequest;
-import com.alex.researchhub.dto.ProjectResponse;
+import com.alex.researchhub.dto.project.ProjectRequest;
+import com.alex.researchhub.dto.project.ProjectResponse;
 
 public interface ProjectService {
 

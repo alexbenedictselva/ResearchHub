@@ -1,16 +1,16 @@
-package com.alex.researchhub.dto;
+package com.alex.researchhub.dto.project;
 
-import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class ProjectRequest {
+@Builder
+public class ProjectResponse {
 
     private Long id;
 
     private Long researcher;
 
-    @NotBlank
     private String title;
 
     private String description;

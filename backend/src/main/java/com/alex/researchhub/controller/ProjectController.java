@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alex.researchhub.common.response.ApiResponse;
 import com.alex.researchhub.common.response.ResponseBuilder;
-import com.alex.researchhub.dto.ProjectRequest;
-import com.alex.researchhub.dto.ProjectResponse;
-import com.alex.researchhub.service.ProjectService;
+import com.alex.researchhub.dto.project.ProjectRequest;
+import com.alex.researchhub.dto.project.ProjectResponse;
+import com.alex.researchhub.service.project.ProjectService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,7 @@
 package com.alex.researchhub.paper.service;
 
 import com.alex.researchhub.paper.client.PaperClient;
+import com.alex.researchhub.paper.dto.AuthorResponse;
 import com.alex.researchhub.paper.dto.PaperDetailsResponse;
 import com.alex.researchhub.paper.dto.PaperResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,4 +29,10 @@ public class PaperServiceImpl implements PaperService {
 
     }
 
+    @Override
+    public List<AuthorResponse> searchAuthors(String name) {
+
+        return paperClient.searchAuthors(name);
+
+    }
 }

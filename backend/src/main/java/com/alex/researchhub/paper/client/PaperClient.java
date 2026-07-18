@@ -4,6 +4,7 @@ package com.alex.researchhub.paper.client;
 
 import java.util.List;
 
+import com.alex.researchhub.paper.dto.AuthorResponse;
 import com.alex.researchhub.paper.dto.PaperDetailsResponse;
 import com.alex.researchhub.paper.dto.PaperResponse;
 
@@ -13,5 +14,6 @@ public interface PaperClient {
 
     List<PaperResponse> searchPapers(String query);
     PaperDetailsResponse getPaperDetails(String paperId);
+    List<AuthorResponse> searchAuthors(String name);
 
 }

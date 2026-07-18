@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import com.alex.researchhub.paper.dto.AuthorDto;
+import com.alex.researchhub.paper.dto.AuthorResponse;
 import com.alex.researchhub.paper.dto.CitationDto;
 import com.alex.researchhub.paper.dto.PaperDetailsResponse;
 import com.alex.researchhub.paper.dto.PaperResponse;
@@ -207,4 +208,65 @@ public class SemanticScholarClient implements PaperClient {
                 .build();
     }
 
+
+    @Override
+public List<AuthorResponse> searchAuthors(String name) {
+
+    Map<String, Object> response =
+            restClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/author/search")
+                            .queryParam("query", name)
+                            .queryParam("limit", 10)
+                            .queryParam(
+                                    "fields",
+                                    "authorId,name,affiliations,paperCount,citationCount,hIndex,homepage"
+                            )
+                            .build())
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                    });
+
+    List<AuthorResponse> authors = new ArrayList<>();
+
+    if (response == null) {
+        return authors;
+    }
+
+    List<Map<String, Object>> data =
+            (List<Map<String, Object>>) response.get("data");
+
+    if (data == null) {
+        return authors;
+    }
+
+    for (Map<String, Object> author : data) {
+
+        String affiliation = null;
+
+        Object affiliations = author.get("affiliations");
+
+        if (affiliations instanceof List<?> list && !list.isEmpty()) {
+            affiliation = String.valueOf(list.get(0));
+        }
+
+        authors.add(
+                AuthorResponse.builder()
+                        .authorId(String.valueOf(author.get("authorId")))
+                        .name(String.valueOf(author.get("name")))
+                        .affiliation(affiliation)
+                        .paperCount((Integer) author.get("paperCount"))
+                        .citationCount((Integer) author.get("citationCount"))
+                        .hIndex((Integer) author.get("hIndex"))
+                        .homepage(
+                                author.get("homepage") == null
+                                        ? null
+                                        : String.valueOf(author.get("homepage")))
+                        .build());
+
+    }
+
+    return authors;
+
+}
 }

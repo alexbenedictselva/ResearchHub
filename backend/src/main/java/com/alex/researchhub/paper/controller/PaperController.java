@@ -1,5 +1,6 @@
 package com.alex.researchhub.paper.controller;
 
+import com.alex.researchhub.paper.dto.AuthorResponse;
 import com.alex.researchhub.paper.dto.PaperDetailsResponse;
 import com.alex.researchhub.paper.dto.PaperResponse;
 import com.alex.researchhub.paper.service.PaperService;
@@ -32,6 +33,14 @@ public class PaperController {
             @PathVariable String paperId) {
 
         return paperService.getPaperDetails(paperId);
+
+    }
+
+    @GetMapping("/authors/search")
+    public List<AuthorResponse> searchAuthors(
+            @RequestParam String name) {
+
+        return paperService.searchAuthors(name);
 
     }
 }

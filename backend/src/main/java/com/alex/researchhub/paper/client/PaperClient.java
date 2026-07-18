@@ -1,4 +1,15 @@
 package com.alex.researchhub.paper.client;
 
+// import com.yourpackage.paper.dto.PaperResponse;
+
+import java.util.List;
+
+import com.alex.researchhub.paper.dto.PaperResponse;
+
+// import com.alex.researchhub.paper.config.PaperResponse;
+
 public interface PaperClient {
+
+    List<PaperResponse> searchPapers(String query);
+
 }

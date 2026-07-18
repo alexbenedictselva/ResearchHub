@@ -1,17 +1,32 @@
 package com.alex.researchhub.paper.dto;
 
-import java.util.List;
-
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaperResponse {
+
+    private String paperId;
+
     private String title;
+
     private String abstractText;
+
+    private Integer year;
+
+    private Integer citationCount;
+
     private String doi;
-    private List<AuthorDto> authors;
-    private String year;
+
     private String url;
+
+    private List<AuthorDto> authors;
+
 }

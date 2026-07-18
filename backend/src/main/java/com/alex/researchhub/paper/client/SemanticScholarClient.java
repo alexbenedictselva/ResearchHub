@@ -8,7 +8,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import com.alex.researchhub.paper.dto.AuthorDto;
+import com.alex.researchhub.paper.dto.CitationDto;
+import com.alex.researchhub.paper.dto.PaperDetailsResponse;
 import com.alex.researchhub.paper.dto.PaperResponse;
+import com.alex.researchhub.paper.dto.ReferenceDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,6 +117,94 @@ public class SemanticScholarClient implements PaperClient {
 
         return papers;
 
+    }
+
+    @Override
+    public PaperDetailsResponse getPaperDetails(String paperId) {
+
+        Map<String, Object> response = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/paper/{paperId}")
+                        .queryParam(
+                                "fields",
+                                "paperId,title,abstract,year,citationCount,referenceCount,venue,journal,publicationDate,url,externalIds,authors,references,citations")
+                        .build(paperId))
+                .retrieve()
+                .body(new ParameterizedTypeReference<Map<String, Object>>() {
+                });
+
+        if (response == null) {
+            return null;
+        }
+
+        List<AuthorDto> authors = new ArrayList<>();
+
+        List<Map<String, Object>> authorData = (List<Map<String, Object>>) response.get("authors");
+
+        if (authorData != null) {
+
+            for (Map<String, Object> author : authorData) {
+
+                authors.add(
+                        AuthorDto.builder()
+                                .authorId(String.valueOf(author.get("authorId")))
+                                .name(String.valueOf(author.get("name")))
+                                .build());
+
+            }
+        }
+
+        List<ReferenceDto> references = new ArrayList<>();
+
+        List<Map<String, Object>> referenceData = (List<Map<String, Object>>) response.get("references");
+
+        if (referenceData != null) {
+
+            for (Map<String, Object> ref : referenceData) {
+
+                references.add(
+                        ReferenceDto.builder()
+                                .paperId(String.valueOf(ref.get("paperId")))
+                                .title(String.valueOf(ref.get("title")))
+                                .build());
+
+            }
+        }
+
+        List<CitationDto> citations = new ArrayList<>();
+
+        List<Map<String, Object>> citationData = (List<Map<String, Object>>) response.get("citations");
+
+        if (citationData != null) {
+
+            for (Map<String, Object> citation : citationData) {
+
+                citations.add(
+                        CitationDto.builder()
+                                .paperId(String.valueOf(citation.get("paperId")))
+                                .title(String.valueOf(citation.get("title")))
+                                .build());
+
+            }
+        }
+
+        return PaperDetailsResponse.builder()
+                .paperId(String.valueOf(response.get("paperId")))
+                .title(String.valueOf(response.get("title")))
+                .abstractText(String.valueOf(response.get("abstract")))
+                .year((Integer) response.get("year"))
+                .citationCount((Integer) response.get("citationCount"))
+                .referenceCount((Integer) response.get("referenceCount"))
+                .venue(String.valueOf(response.get("venue")))
+                .url(String.valueOf(response.get("url")))
+                .doi(response.containsKey("externalIds")
+                        ? String.valueOf(((Map<?, ?>) response.get("externalIds")).get("DOI"))
+                        : null)
+                .authors(authors)
+                .references(references)
+                .citations(citations)
+                .similarPapers(new ArrayList<>())
+                .build();
     }
 
 }

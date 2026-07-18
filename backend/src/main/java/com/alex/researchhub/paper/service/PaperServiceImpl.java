@@ -1,6 +1,7 @@
 package com.alex.researchhub.paper.service;
 
 import com.alex.researchhub.paper.client.PaperClient;
+import com.alex.researchhub.paper.dto.PaperDetailsResponse;
 import com.alex.researchhub.paper.dto.PaperResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,13 @@ public class PaperServiceImpl implements PaperService {
     public List<PaperResponse> searchPapers(String query) {
 
         return paperClient.searchPapers(query);
+
+    }
+
+    @Override
+    public PaperDetailsResponse getPaperDetails(String paperId) {
+
+        return paperClient.getPaperDetails(paperId);
 
     }
 

@@ -17,16 +17,19 @@ import com.alex.researchhub.common.response.ApiResponse;
 import com.alex.researchhub.common.response.ResponseBuilder;
 import com.alex.researchhub.dto.publication.PublicationRequest;
 import com.alex.researchhub.dto.publication.PublicationResponse;
+import com.alex.researchhub.paper.dto.DoiRequest;
+import com.alex.researchhub.paper.service.PaperService;
 import com.alex.researchhub.service.publication.PublicationService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/publication")
+@RequestMapping("/api/publications")
 @RequiredArgsConstructor
 public class PublicationController {
     private final PublicationService service;
+    private final PaperService paperService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<PublicationResponse>> create(@Valid @RequestBody PublicationRequest req) {
@@ -55,5 +58,11 @@ public class PublicationController {
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         service.deletePublication(id);
         return ResponseBuilder.success("Publication Deleted Successfully", HttpStatus.OK);
+    }
+
+    @PostMapping("/import-doi")
+    public ResponseEntity<ApiResponse<Void>> importByDoi(@Valid @RequestBody DoiRequest req) {
+        paperService.importByDoi(req);
+        return ResponseBuilder.success("Publication imported successfully", HttpStatus.CREATED);
     }
 }

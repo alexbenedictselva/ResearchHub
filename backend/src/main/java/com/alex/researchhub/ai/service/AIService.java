@@ -30,7 +30,7 @@ public class AIService {
     public NoveltyResponse checkNovelty(NoveltyCheckRequest request) {
         List<PaperDTO> papers = request.getPapers().stream().map(item -> {
             PaperDetailsResponse details = paperService.getPaperDetails(item.getPaperId());
-            return new PaperDTO(item.getPaperId(), details.getTitle(), details.getAbstractText());
+            return new PaperDTO(item.getPaperId(), details.getTitle(), details.getAbstractText(), details.getYear(), details.getCitationCount());
         }).toList();
 
         return aiClient.checkNovelty(new NoveltyRequest(request.getUserAbstract(), papers));

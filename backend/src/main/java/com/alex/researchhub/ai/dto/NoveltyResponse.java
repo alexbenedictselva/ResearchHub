@@ -1,61 +1,127 @@
 package com.alex.researchhub.ai.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public class NoveltyResponse {
 
-    private double noveltyScore;
+    private double innovationScore;
+    private SemanticSimilarity semanticSimilarity;
+    private List<TopMatch> topMatches;
+    private KeywordNovelty keywordNovelty;
+    private ResearchMaturity researchMaturity;
+    private Report report;
 
-    private double highestSimilarity;
+    public double getInnovationScore() { return innovationScore; }
+    public void setInnovationScore(double innovationScore) { this.innovationScore = innovationScore; }
 
-    private double averageSimilarity;
+    public SemanticSimilarity getSemanticSimilarity() { return semanticSimilarity; }
+    public void setSemanticSimilarity(SemanticSimilarity semanticSimilarity) { this.semanticSimilarity = semanticSimilarity; }
 
-    private List<PaperSimilarity> topMatches;
+    public List<TopMatch> getTopMatches() { return topMatches; }
+    public void setTopMatches(List<TopMatch> topMatches) { this.topMatches = topMatches; }
 
-    public NoveltyResponse() {
+    public KeywordNovelty getKeywordNovelty() { return keywordNovelty; }
+    public void setKeywordNovelty(KeywordNovelty keywordNovelty) { this.keywordNovelty = keywordNovelty; }
+
+    public ResearchMaturity getResearchMaturity() { return researchMaturity; }
+    public void setResearchMaturity(ResearchMaturity researchMaturity) { this.researchMaturity = researchMaturity; }
+
+    public Report getReport() { return report; }
+    public void setReport(Report report) { this.report = report; }
+
+    public static class SemanticSimilarity {
+        private double highest;
+        private double average;
+        private double lowest;
+
+        public double getHighest() { return highest; }
+        public void setHighest(double highest) { this.highest = highest; }
+
+        public double getAverage() { return average; }
+        public void setAverage(double average) { this.average = average; }
+
+        public double getLowest() { return lowest; }
+        public void setLowest(double lowest) { this.lowest = lowest; }
     }
 
-    public NoveltyResponse(
-            double noveltyScore,
-            double highestSimilarity,
-            double averageSimilarity,
-            List<PaperSimilarity> topMatches) {
+    public static class TopMatch {
+        private String paperId;
+        private String title;
+        private double similarity;
+        private Integer year;
+        private Integer citationCount;
 
-        this.noveltyScore = noveltyScore;
-        this.highestSimilarity = highestSimilarity;
-        this.averageSimilarity = averageSimilarity;
-        this.topMatches = topMatches;
+        public String getPaperId() { return paperId; }
+        public void setPaperId(String paperId) { this.paperId = paperId; }
+
+        public String getTitle() { return title; }
+        public void setTitle(String title) { this.title = title; }
+
+        public double getSimilarity() { return similarity; }
+        public void setSimilarity(double similarity) { this.similarity = similarity; }
+
+        public Integer getYear() { return year; }
+        public void setYear(Integer year) { this.year = year; }
+
+        public Integer getCitationCount() { return citationCount; }
+        public void setCitationCount(Integer citationCount) { this.citationCount = citationCount; }
     }
 
-    public double getNoveltyScore() {
-        return noveltyScore;
+    public static class KeywordNovelty {
+        private List<String> userKeywords;
+        private List<String> novelKeywords;
+        private List<String> overlapKeywords;
+        private double keywordNoveltyScore;
+
+        public List<String> getUserKeywords() { return userKeywords; }
+        public void setUserKeywords(List<String> userKeywords) { this.userKeywords = userKeywords; }
+
+        public List<String> getNovelKeywords() { return novelKeywords; }
+        public void setNovelKeywords(List<String> novelKeywords) { this.novelKeywords = novelKeywords; }
+
+        public List<String> getOverlapKeywords() { return overlapKeywords; }
+        public void setOverlapKeywords(List<String> overlapKeywords) { this.overlapKeywords = overlapKeywords; }
+
+        public double getKeywordNoveltyScore() { return keywordNoveltyScore; }
+        public void setKeywordNoveltyScore(double keywordNoveltyScore) { this.keywordNoveltyScore = keywordNoveltyScore; }
     }
 
-    public void setNoveltyScore(double noveltyScore) {
-        this.noveltyScore = noveltyScore;
+    public static class ResearchMaturity {
+        private Integer averageYear;
+        private Integer averageCitationCount;
+        private String maturityLabel;
+        private double maturityScore;
+
+        public Integer getAverageYear() { return averageYear; }
+        public void setAverageYear(Integer averageYear) { this.averageYear = averageYear; }
+
+        public Integer getAverageCitationCount() { return averageCitationCount; }
+        public void setAverageCitationCount(Integer averageCitationCount) { this.averageCitationCount = averageCitationCount; }
+
+        public String getMaturityLabel() { return maturityLabel; }
+        public void setMaturityLabel(String maturityLabel) { this.maturityLabel = maturityLabel; }
+
+        public double getMaturityScore() { return maturityScore; }
+        public void setMaturityScore(double maturityScore) { this.maturityScore = maturityScore; }
     }
 
-    public double getHighestSimilarity() {
-        return highestSimilarity;
-    }
+    public static class Report {
+        private List<String> strengths;
+        private List<String> weaknesses;
+        private List<String> recommendations;
+        private String summary;
 
-    public void setHighestSimilarity(double highestSimilarity) {
-        this.highestSimilarity = highestSimilarity;
-    }
+        public List<String> getStrengths() { return strengths; }
+        public void setStrengths(List<String> strengths) { this.strengths = strengths; }
 
-    public double getAverageSimilarity() {
-        return averageSimilarity;
-    }
+        public List<String> getWeaknesses() { return weaknesses; }
+        public void setWeaknesses(List<String> weaknesses) { this.weaknesses = weaknesses; }
 
-    public void setAverageSimilarity(double averageSimilarity) {
-        this.averageSimilarity = averageSimilarity;
-    }
+        public List<String> getRecommendations() { return recommendations; }
+        public void setRecommendations(List<String> recommendations) { this.recommendations = recommendations; }
 
-    public List<PaperSimilarity> getTopMatches() {
-        return topMatches;
-    }
-
-    public void setTopMatches(List<PaperSimilarity> topMatches) {
-        this.topMatches = topMatches;
+        public String getSummary() { return summary; }
+        public void setSummary(String summary) { this.summary = summary; }
     }
 }

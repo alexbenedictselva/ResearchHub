@@ -5,42 +5,36 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class PaperDTO {
 
     private String paperId;
-
     private String title;
 
     @JsonProperty("abstract")
     private String abstractText;
 
-    public PaperDTO() {
-    }
+    private Integer year;
+    private Integer citationCount;
 
-    public PaperDTO(String paperId, String title, String abstractText) {
+    public PaperDTO() {}
+
+    public PaperDTO(String paperId, String title, String abstractText, Integer year, Integer citationCount) {
         this.paperId = paperId;
         this.title = title;
         this.abstractText = abstractText;
+        this.year = year;
+        this.citationCount = citationCount;
     }
 
-    public String getPaperId() {
-        return paperId;
-    }
+    public String getPaperId() { return paperId; }
+    public void setPaperId(String paperId) { this.paperId = paperId; }
 
-    public void setPaperId(String paperId) {
-        this.paperId = paperId;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getAbstractText() { return abstractText; }
+    public void setAbstractText(String abstractText) { this.abstractText = abstractText; }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public Integer getYear() { return year; }
+    public void setYear(Integer year) { this.year = year; }
 
-    public String getAbstractText() {
-        return abstractText;
-    }
-
-    public void setAbstractText(String abstractText) {
-        this.abstractText = abstractText;
-    }
+    public Integer getCitationCount() { return citationCount; }
+    public void setCitationCount(Integer citationCount) { this.citationCount = citationCount; }
 }

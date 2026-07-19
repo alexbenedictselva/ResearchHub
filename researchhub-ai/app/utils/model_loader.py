@@ -1,32 +1,35 @@
-from transformers import pipeline
 from sentence_transformers import SentenceTransformer
 
-summarizer = None
 embedding_model = None
+summarizer = None
 
 
 def load_models():
-    global summarizer
+    """
+    Called once at application startup.
+    Only loads the embedding model which is required by the core novelty pipeline.
+    The summarizer is loaded lazily on first use to avoid startup failures
+    caused by transformers version incompatibilities.
+    """
     global embedding_model
 
+    if embedding_model is None:
+        print("Loading Sentence Transformer...")
+        embedding_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+        print("Sentence Transformer Loaded Successfully.")
+
+
+def get_summarizer():
+    """
+    Lazily loads the summarizer pipeline on first call.
+    Separated from startup so the app runs even if the summarizer fails.
+    """
+    global summarizer
+
     if summarizer is None:
-
+        from transformers import pipeline
         print("Loading T5 Model...")
-
-        summarizer = pipeline(
-            task="summarization",
-            model="t5-small",
-            tokenizer="t5-small"
-        )
-
+        summarizer = pipeline("text-generation", model="t5-small", tokenizer="t5-small")
         print("T5 Loaded Successfully.")
 
-    if embedding_model is None:
-
-        print("Loading Sentence Transformer...")
-
-        embedding_model = SentenceTransformer(
-            "sentence-transformers/all-MiniLM-L6-v2"
-        )
-
-        print("Sentence Transformer Loaded Successfully.")
+    return summarizer

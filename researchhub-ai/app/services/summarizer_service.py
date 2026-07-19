@@ -1,15 +1,10 @@
-import app.utils.model_loader as model_loader
+from app.utils.model_loader import get_summarizer
+
 
 class SummarizerService:
 
     @staticmethod
-    def summarize(text: str):
-
-        result = model_loader.summarizer(
-            text,
-            max_length=100,
-            min_length=30,
-            do_sample=False
-        )
-
-        return result[0]["summary_text"]
+    def summarize(text: str) -> str:
+        summarizer = get_summarizer()
+        result = summarizer(text, max_new_tokens=100)
+        return result[0]["generated_text"]

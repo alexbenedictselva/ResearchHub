@@ -1,6 +1,8 @@
 package com.alex.researchhub.ai.client;
 
 import com.alex.researchhub.ai.dto.AIResponse;
+import com.alex.researchhub.ai.dto.NoveltyRequest;
+import com.alex.researchhub.ai.dto.NoveltyResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -12,8 +14,14 @@ public class AIClient {
     private final RestClient restClient;
 
     public AIClient(RestClient.Builder builder) {
-        this.restClient = builder.baseUrl("http://localhost:8000").build();
+        this.restClient = builder
+                .baseUrl("http://localhost:8000")
+                .build();
     }
+
+    // ===========================
+    // Summarization
+    // ===========================
 
     public AIResponse summarize(String abstractText) {
 
@@ -27,4 +35,19 @@ public class AIClient {
                 .retrieve()
                 .body(AIResponse.class);
     }
+
+    // ===========================
+    // Novelty Checker
+    // ===========================
+
+    public NoveltyResponse checkNovelty(NoveltyRequest request) {
+
+        return restClient.post()
+                .uri("/ai/novelty-check")
+                .body(request)
+                .retrieve()
+                .body(NoveltyResponse.class);
+
+    }
+
 }

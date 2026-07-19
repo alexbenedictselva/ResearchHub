@@ -1,18 +1,29 @@
 from fastapi import FastAPI
-from app.routers.summarize import router
-from app.utils.model_loader import load_model
+
+from app.utils.model_loader import load_models
+
+from app.routers.summarize import router as summarize_router
+from app.routers.novelty import router as novelty_router
 
 app = FastAPI(
     title="ResearchHub AI Service",
     version="1.0"
 )
 
-@app.on_event("startup")
-def startup_event():
-    load_model()
 
-app.include_router(router)
+@app.on_event("startup")
+def startup():
+
+    load_models()
+
+
+app.include_router(summarize_router)
+app.include_router(novelty_router)
+
 
 @app.get("/")
 def home():
-    return {"message": "ResearchHub AI Service Running"}
+
+    return {
+        "message": "ResearchHub AI Running"
+    }

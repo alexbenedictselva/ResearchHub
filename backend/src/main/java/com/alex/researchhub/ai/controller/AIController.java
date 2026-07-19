@@ -2,6 +2,8 @@ package com.alex.researchhub.ai.controller;
 
 import com.alex.researchhub.ai.dto.AIRequest;
 import com.alex.researchhub.ai.dto.AIResponse;
+import com.alex.researchhub.ai.dto.NoveltyCheckRequest;
+import com.alex.researchhub.ai.dto.NoveltyResponse;
 import com.alex.researchhub.ai.service.AIService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +19,11 @@ public class AIController {
 
     @PostMapping("/summarize")
     public AIResponse summarize(@RequestBody AIRequest request) {
+        return aiService.summarize(request.getAbstractText());
+    }
 
-        return aiService.summarize(
-                request.getAbstractText()
-        );
+    @PostMapping("/novelty-check")
+    public NoveltyResponse noveltyCheck(@RequestBody NoveltyCheckRequest request) {
+        return aiService.checkNovelty(request);
     }
 }

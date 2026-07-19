@@ -37,7 +37,7 @@ public class PaperController {
 
     }
 
-    @GetMapping("/{paperId}")
+    @GetMapping("/{paperId}/details")
     public PaperDetailsResponse getPaperDetails(
             @PathVariable String paperId) {
 

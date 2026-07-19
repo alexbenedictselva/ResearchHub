@@ -3,6 +3,7 @@ package com.alex.researchhub.paper.controller;
 import com.alex.researchhub.paper.dto.AuthorResponse;
 import com.alex.researchhub.paper.dto.DoiRequest;
 import com.alex.researchhub.paper.dto.PaperDetailsResponse;
+import com.alex.researchhub.paper.dto.PaperFilterRequest;
 import com.alex.researchhub.paper.dto.PaperResponse;
 import com.alex.researchhub.paper.dto.TrendingResponse;
 import com.alex.researchhub.paper.service.PaperService;
@@ -79,4 +80,20 @@ public class PaperController {
         return paperService.getTrendingResearch();
 
     }
+
+    @GetMapping("/{paperId}/similar")
+    public List<PaperResponse> getSimilarPapers(
+            @PathVariable String paperId) {
+
+        return paperService.getSimilarPapers(paperId);
+
+    }
+
+    @PostMapping("/filter")
+public List<PaperResponse> filterPapers(
+        @RequestBody PaperFilterRequest request) {
+
+    return paperService.filterPapers(request);
+
+}
 }

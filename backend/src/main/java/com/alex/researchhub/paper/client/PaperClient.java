@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.alex.researchhub.paper.dto.AuthorResponse;
 import com.alex.researchhub.paper.dto.PaperDetailsResponse;
+import com.alex.researchhub.paper.dto.PaperFilterRequest;
 import com.alex.researchhub.paper.dto.PaperResponse;
 import com.alex.researchhub.paper.dto.TrendingResponse;
 
@@ -27,4 +28,6 @@ public interface PaperClient {
 
     TrendingResponse getTrendingResearch();
 
+    List<PaperResponse> getSimilarPapers(String paperId);
+    List<PaperResponse> filterPapers(PaperFilterRequest request);
 }

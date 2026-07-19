@@ -25,7 +25,9 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException, ServletException {
-        ApiResponse<Void> body = ApiResponse.<Void>builder().success(false).message("Authentication is required")
+        String jwtError = (String) request.getAttribute("jwt.error");
+        String message = jwtError != null ? jwtError : authException.getMessage();
+        ApiResponse<Void> body = ApiResponse.<Void>builder().success(false).message(message)
                 .status(HttpStatus.UNAUTHORIZED.value()).timestamp(LocalDateTime.now()).data(null).build();
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

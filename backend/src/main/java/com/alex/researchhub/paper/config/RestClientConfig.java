@@ -7,12 +7,22 @@ import org.springframework.web.client.RestClient;
 @Configuration
 public class RestClientConfig {
 
-    @Bean
-    public RestClient restClient(SemanticScholarProperties properties) {
+    @Bean("graphRestClient")
+    public RestClient graphRestClient(SemanticScholarProperties properties) {
 
         return RestClient.builder()
                 .baseUrl(properties.getBaseUrl())
                 .defaultHeader("x-api-key", properties.getKey())
                 .build();
+    }
+
+    @Bean("recommendationRestClient")
+    public RestClient recommendationRestClient(SemanticScholarProperties properties) {
+
+        return RestClient.builder()
+                .baseUrl("https://api.semanticscholar.org")
+                .defaultHeader("x-api-key", properties.getKey())
+                .build();
+
     }
 }

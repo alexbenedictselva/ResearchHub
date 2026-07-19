@@ -9,6 +9,7 @@ import com.alex.researchhub.paper.dto.AuthorResponse;
 import com.alex.researchhub.paper.dto.CrossrefResponse;
 import com.alex.researchhub.paper.dto.DoiRequest;
 import com.alex.researchhub.paper.dto.PaperDetailsResponse;
+import com.alex.researchhub.paper.dto.PaperFilterRequest;
 import com.alex.researchhub.paper.dto.PaperResponse;
 import com.alex.researchhub.paper.dto.TrendingResponse;
 import com.alex.researchhub.repository.ProjectRepository;
@@ -105,4 +106,18 @@ public class PaperServiceImpl implements PaperService {
         return paperClient.getTrendingResearch();
 
     }
+
+    @Override
+    public List<PaperResponse> getSimilarPapers(String paperId) {
+
+        return paperClient.getSimilarPapers(paperId);
+
+    }
+
+    @Override
+public List<PaperResponse> filterPapers(PaperFilterRequest request) {
+
+    return paperClient.filterPapers(request);
+
+}
 }

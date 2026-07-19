@@ -27,6 +27,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleNotFound(EntityNotFoundException exception) { return error(HttpStatus.NOT_FOUND, exception.getMessage()); }
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiResponse<Void>> handleAuthentication(AuthenticationException exception) { return error(HttpStatus.UNAUTHORIZED, "Invalid email or password"); }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Void>> handleGeneric(Exception exception) { return error(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage()); }
     private ResponseEntity<ApiResponse<Void>> error(HttpStatus status, String message) {
         return ResponseEntity.status(status).body(ApiResponse.<Void>builder().success(false).message(message)
                 .status(status.value()).timestamp(LocalDateTime.now()).data(null).build());

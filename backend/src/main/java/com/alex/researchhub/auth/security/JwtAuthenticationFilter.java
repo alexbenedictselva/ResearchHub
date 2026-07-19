@@ -57,6 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (RuntimeException e) {
             log.warn("[JWT] Token processing failed: {}", e.getMessage());
+            request.setAttribute("jwt.error", e.getMessage());
         }
         filterChain.doFilter(request, response);
     }

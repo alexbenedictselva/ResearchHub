@@ -9,6 +9,9 @@ import {
 import { Bell, Search, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { List, ListItem, ListItemText } from "@mui/material";
 
 const Navbar = ({ userName }) => {
   const navigate = useNavigate();
@@ -32,6 +35,63 @@ const Navbar = ({ userName }) => {
       .slice(0, 2)
       .join("")
       .toUpperCase() || "RH";
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const wrapperRef = useRef(null);
+
+  const normalize = (paper, fallbackId) => ({
+    id: paper.paperId || paper.id || fallbackId,
+    title: paper.title || paper.name || "Untitled",
+    authors: (paper.authors || []).map((a) => a.name || a).join(", "),
+    year: paper.year || paper.publicationDate || "N/A",
+    abstract: paper.abstractText || paper.abstract || "",
+  });
+
+  const handleNavbarSearch = async () => {
+    const q = (searchQuery || "").trim();
+    if (!q) return setShowSearchResults(true);
+    setSearchLoading(true);
+    setSearchResults([]);
+    try {
+      const auth = localStorage.getItem("auth");
+      if (!auth) {
+        navigate("/login");
+        return;
+      }
+      const parsed = JSON.parse(auth);
+      const res = await axios.post(
+        "http://localhost:8080/api/papers/search",
+        { userAbstract: q },
+        { headers: { Authorization: `Bearer ${parsed.accessToken}` } },
+      );
+
+      const payload = Array.isArray(res.data)
+        ? res.data
+        : res.data?.papers || [];
+      const normalized = (payload || []).map((p, i) => normalize(p, i + 1));
+      setSearchResults(normalized);
+      setShowSearchResults(true);
+    } catch (e) {
+      setSearchResults([]);
+      setShowSearchResults(true);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    function handleDocClick(e) {
+      if (!wrapperRef.current) return;
+      if (!wrapperRef.current.contains(e.target)) {
+        setShowSearchResults(false);
+      }
+    }
+    document.addEventListener("mousedown", handleDocClick);
+    return () => document.removeEventListener("mousedown", handleDocClick);
+  }, []);
 
   return (
     <Box
@@ -115,36 +175,96 @@ const Navbar = ({ userName }) => {
           </Button>
         </Box>
         <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            border: "1px solid #E5E7EB",
-            borderRadius: "999px",
-            backgroundColor: "#fff",
-            px: 1.25,
-            py: 0.6,
-            minWidth: { xs: "100%", md: 360 },
-            boxShadow: "0 6px 18px rgba(15,23,42,0.04)",
-          }}
+          ref={wrapperRef}
+          sx={{ position: "relative", display: "flex", alignItems: "center" }}
         >
-          <Search size={18} color="#6B7280" />
-          <InputBase
-            placeholder="Search papers, authors, keywords, DOI..."
-            sx={{ ml: 1, flex: 1, color: "#111827", fontSize: "0.95rem" }}
-          />
-          <Button
-            variant="contained"
-            size="small"
+          <Box
             sx={{
+              display: "flex",
+              alignItems: "center",
+              border: "1px solid #E5E7EB",
               borderRadius: "999px",
-              px: 1.5,
-              py: 0.75,
-              ml: 1,
-              minWidth: "auto",
+              backgroundColor: "#fff",
+              px: 1.25,
+              py: 0.6,
+              minWidth: { xs: "100%", md: 360 },
+              boxShadow: "0 6px 18px rgba(15,23,42,0.04)",
             }}
           >
-            Search
-          </Button>
+            <Search size={18} color="#6B7280" />
+            <InputBase
+              placeholder="Search papers, authors, keywords, DOI..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleNavbarSearch();
+              }}
+              sx={{ ml: 1, flex: 1, color: "#111827", fontSize: "0.95rem" }}
+            />
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleNavbarSearch}
+              sx={{
+                borderRadius: "999px",
+                px: 1.5,
+                py: 0.75,
+                ml: 1,
+                minWidth: "auto",
+              }}
+            >
+              Search
+            </Button>
+          </Box>
+
+          {showSearchResults && (
+            <Box
+              sx={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: "calc(100% + 8px)",
+                backgroundColor: "#fff",
+                border: "1px solid #E5E7EB",
+                borderRadius: 2,
+                boxShadow: "0 12px 40px rgba(2,6,23,0.08)",
+                zIndex: 1400,
+                maxHeight: 340,
+                overflow: "auto",
+                px: 1,
+                py: 1,
+              }}
+            >
+              {searchLoading ? (
+                <Typography sx={{ color: "#6B7280", p: 1 }}>
+                  Searching...
+                </Typography>
+              ) : searchResults.length === 0 ? (
+                <Typography sx={{ color: "#6B7280", p: 1 }}>
+                  No results
+                </Typography>
+              ) : (
+                <List disablePadding>
+                  {searchResults.map((p) => (
+                    <ListItem
+                      key={p.id}
+                      secondaryAction={
+                        <Button
+                          size="small"
+                          onClick={() => navigate(`/papers/${p.id}`)}
+                        >
+                          View
+                        </Button>
+                      }
+                      sx={{ borderBottom: "1px solid #F3F4F6" }}
+                    >
+                      <ListItemText primary={p.title} secondary={p.authors} />
+                    </ListItem>
+                  ))}
+                </List>
+              )}
+            </Box>
+          )}
         </Box>
 
         <IconButton

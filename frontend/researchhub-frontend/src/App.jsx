@@ -1,4 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import theme from "./theme/theme";
 import LoginPage from "./pages/auth/LoginPage";
@@ -36,7 +42,6 @@ const AppContent = () => {
       </Routes>
     </>
   );
-
 };
 
 export default App;

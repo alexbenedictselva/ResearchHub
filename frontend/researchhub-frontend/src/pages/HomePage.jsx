@@ -36,6 +36,23 @@ const normalizePaper = (paper, fallbackId) => ({
     "No abstract available at the moment.",
 });
 
+const readCache = (key) => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+const writeCache = (key, value) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    // ignore
+  }
+};
+
 const HomePage = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -57,34 +74,54 @@ const HomePage = () => {
     const parsedAuth = JSON.parse(auth);
     setUser(parsedAuth);
 
-    const fetchTrendingPapers = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8080/api/papers/trending",
-          {
-            headers: {
-              Authorization: `Bearer ${parsedAuth.accessToken}`,
+    const CACHE_KEY = "rh_trendingPapers";
+    const cached = readCache(CACHE_KEY);
+    if (cached && Array.isArray(cached) && cached.length > 0) {
+      setTrendingPapers(cached);
+      setLoadingTrending(false);
+    } else {
+      const fetchTrendingPapers = async () => {
+        try {
+          const response = await axios.get(
+            "http://localhost:8080/api/papers/trending",
+            {
+              headers: {
+                Authorization: `Bearer ${parsedAuth.accessToken}`,
+              },
             },
-          },
-        );
+          );
 
-        const normalizedPapers = (response.data?.mostCitedPapers || [])
-          .slice(0, 5)
-          .map((paper, index) => normalizePaper(paper, index + 1));
+          const normalizedPapers = (response.data?.mostCitedPapers || [])
+            .slice(0, 5)
+            .map((paper, index) => normalizePaper(paper, index + 1));
 
-        setTrendingPapers(normalizedPapers);
-      } catch (error) {
-        setTrendingError("Unable to load trending papers right now.");
-      } finally {
-        setLoadingTrending(false);
-      }
-    };
+          setTrendingPapers(normalizedPapers);
+          writeCache(CACHE_KEY, normalizedPapers);
+        } catch (error) {
+          setTrendingError("Unable to load trending papers right now.");
+        } finally {
+          setLoadingTrending(false);
+        }
+      };
 
-    fetchTrendingPapers();
+      fetchTrendingPapers();
+    }
   }, [navigate]);
 
   useEffect(() => {
     if (!user?.accessToken) return;
+
+    const domainKey = `rh_domainPapers_${endpointMap[activeDomain]}`;
+    const cachedDomain = readCache(domainKey);
+    if (
+      cachedDomain &&
+      Array.isArray(cachedDomain) &&
+      cachedDomain.length > 0
+    ) {
+      setDomainPapers(cachedDomain);
+      setLoadingDomainPapers(false);
+      return;
+    }
 
     const fetchDomainPapers = async () => {
       setLoadingDomainPapers(true);
@@ -111,6 +148,7 @@ const HomePage = () => {
           .map((paper, index) => normalizePaper(paper, index + 1));
 
         setDomainPapers(normalizedPapers);
+        writeCache(domainKey, normalizedPapers);
       } catch (error) {
         setDomainPapersError(
           "Unable to load papers for this domain right now.",

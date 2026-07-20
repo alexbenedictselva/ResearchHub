@@ -4,6 +4,7 @@ from app.utils.model_loader import load_models
 
 from app.routers.summarize import router as summarize_router
 from app.routers.novelty import router as novelty_router
+from app.routers.keywords import router as keywords_router
 
 app = FastAPI(
     title="ResearchHub AI Service",
@@ -19,6 +20,7 @@ def startup():
 
 app.include_router(summarize_router)
 app.include_router(novelty_router)
+app.include_router(keywords_router)
 
 
 @app.get("/")

@@ -1,8 +1,15 @@
 import { Box, Button, Typography } from "@mui/material";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
-const PaperCard = ({ paper }) => {
+const PaperCard = ({ paper, onCompare }) => {
+  const navigate = useNavigate();
+
+  const handleViewDetails = () => {
+    navigate(`/papers/${paper.id}`);
+  };
+
   return (
     <motion.div
       whileHover={{ y: -3, scale: 1.01 }}
@@ -84,13 +91,25 @@ const PaperCard = ({ paper }) => {
           {paper.abstract}
         </Typography>
 
-        <Button
-          variant="outlined"
-          endIcon={<ArrowRight size={16} />}
-          sx={{ mt: "auto", borderRadius: "12px", alignSelf: "flex-start" }}
-        >
-          View Details
-        </Button>
+        <Box sx={{ display: "flex", gap: 1, mt: "auto" }}>
+          <Button
+            variant="outlined"
+            endIcon={<ArrowRight size={16} />}
+            onClick={handleViewDetails}
+            sx={{ borderRadius: "12px" }}
+          >
+            View Details
+          </Button>
+          {onCompare ? (
+            <Button
+              variant="contained"
+              onClick={() => onCompare(paper)}
+              sx={{ borderRadius: "12px" }}
+            >
+              Compare
+            </Button>
+          ) : null}
+        </Box>
       </Box>
     </motion.div>
   );

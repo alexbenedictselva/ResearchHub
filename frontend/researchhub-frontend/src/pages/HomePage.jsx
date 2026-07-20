@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Box, Grid, Stack, Typography } from "@mui/material";
-import Navbar from "../components/home/Navbar";
 import WelcomeBanner from "../components/home/WelcomeBanner";
 import TrendingPaperSection from "../components/home/TrendingPaperSection";
 import DomainTabs from "../components/home/DomainTabs";
@@ -136,8 +135,6 @@ const HomePage = () => {
       }}
     >
       <Box sx={{ maxWidth: 1320, mx: "auto", px: { xs: 2, md: 3 } }}>
-        <Navbar userName={user.fullName || "Researcher"} />
-
         <Stack spacing={3} sx={{ mt: 2 }}>
           <WelcomeBanner
             userName={user.fullName?.split(" ")[0] || "Researcher"}
@@ -178,7 +175,13 @@ const HomePage = () => {
             ) : (
               <Grid container spacing={2}>
                 {domainPapers.map((paper) => (
-                  <Grid item xs={12} md={6} key={`${paper.id}-${paper.title}`}>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    key={`${paper.id}-${paper.title}`}
+                  >
                     <PaperCard paper={paper} />
                   </Grid>
                 ))}

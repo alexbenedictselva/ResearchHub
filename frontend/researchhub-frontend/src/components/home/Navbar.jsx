@@ -8,10 +8,25 @@ import {
 } from "@mui/material";
 import { Bell, Search, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = ({ userName }) => {
+  const navigate = useNavigate();
+  const storedAuth =
+    typeof window !== "undefined" ? localStorage.getItem("auth") : null;
+  const derivedName = (() => {
+    try {
+      if (userName) return userName;
+      if (!storedAuth) return null;
+      const parsed = JSON.parse(storedAuth);
+      return parsed.fullName || parsed.userName || null;
+    } catch (e) {
+      return null;
+    }
+  })();
+
   const initials =
-    userName
+    derivedName
       ?.split(" ")
       .map((part) => part[0])
       .slice(0, 2)
@@ -27,8 +42,14 @@ const Navbar = ({ userName }) => {
         justifyContent: "space-between",
         gap: 2,
         flexWrap: "wrap",
-        px: { xs: 0, md: 0 },
+        px: { xs: 2, md: 3 },
         py: 2,
+        backgroundColor: "#fff",
+        boxShadow: "0 6px 20px rgba(15,23,42,0.06)",
+        borderBottom: "1px solid #E5E7EB",
+        position: "sticky",
+        top: 0,
+        zIndex: 1200,
       }}
     >
       <Box
@@ -75,6 +96,24 @@ const Navbar = ({ userName }) => {
           flexWrap: "wrap",
         }}
       >
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center", mr: 1 }}>
+          <Button
+            size="small"
+            variant="text"
+            onClick={() => navigate("/home")}
+            sx={{ textTransform: "none", color: "#2563EB", fontWeight: 600 }}
+          >
+            Home
+          </Button>
+          <Button
+            size="small"
+            variant="text"
+            onClick={() => navigate("/compare")}
+            sx={{ textTransform: "none", color: "#2563EB", fontWeight: 600 }}
+          >
+            Compare Papers
+          </Button>
+        </Box>
         <Box
           sx={{
             display: "flex",

@@ -1,4 +1,5 @@
 import re
+from typing import Optional
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 from app.models.request_models import Paper
@@ -28,6 +29,35 @@ class KeywordService:
       2. Comparing those keywords against the retrieved papers to estimate
          how novel the user's terminology is.
     """
+
+    @staticmethod
+    def extract_keywords_from_text(user_abstract: str, top_n: int = 10) -> list[str]:
+        """
+        Extracts the most important keywords from a single abstract text.
+        This is a lightweight version suitable for the new route.
+        """
+        if not user_abstract or not user_abstract.strip():
+            return []
+
+        text = re.sub(r"[^a-zA-Z\s]", " ", user_abstract.lower())
+        tokens = [token for token in text.split() if token not in _STOPWORDS and len(token) > 2]
+
+        if not tokens:
+            return []
+
+        vectorizer = TfidfVectorizer(
+            stop_words=_STOPWORDS,
+            ngram_range=(1, 2),
+            max_features=200,
+            token_pattern=r"(?u)\b[a-zA-Z][a-zA-Z\-]{2,}\b"
+        )
+
+        tfidf_matrix = vectorizer.fit_transform([" ".join(tokens)])
+        feature_names = vectorizer.get_feature_names_out()
+        scores = tfidf_matrix.toarray().flatten()
+
+        ranked = sorted(zip(feature_names, scores), key=lambda item: item[1], reverse=True)
+        return [term for term, score in ranked if score > 0][:top_n]
 
     @staticmethod
     def extract_keywords(user_abstract: str, papers: list[Paper], top_n: int = 15) -> list[str]:

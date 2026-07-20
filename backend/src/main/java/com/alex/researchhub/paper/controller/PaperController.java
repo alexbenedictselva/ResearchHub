@@ -29,9 +29,47 @@ public class PaperController {
 
     private final PaperService paperService;
 
-    @GetMapping("/search")
-    public List<PaperResponse> searchPapers(
-            @RequestParam String query) {
+    // Accept userAbstract in POST body, extract keywords from AI service, then
+    // search
+    @PostMapping("/search")
+    public List<PaperResponse> searchPapersByAbstract(
+            @RequestBody com.alex.researchhub.paper.dto.UserAbstractRequest request) {
+
+        org.springframework.web.client.RestTemplate rt = new org.springframework.web.client.RestTemplate();
+
+        java.util.Map<String, Object> aiResponse = null;
+
+        try {
+            aiResponse = rt.postForObject(
+                    "http://localhost:8000/ai/extract-keywords",
+                    java.util.Collections.singletonMap("userAbstract", request.getUserAbstract()),
+                    java.util.Map.class);
+        } catch (Exception ex) {
+            // If AI service unavailable, fall back to using the provided abstract as query
+        }
+
+        String query = request.getUserAbstract() == null ? "" : request.getUserAbstract();
+
+        if (aiResponse != null && aiResponse.containsKey("keywords")) {
+            Object kws = aiResponse.get("keywords");
+
+            if (kws instanceof java.util.List) {
+                @SuppressWarnings("unchecked")
+                java.util.List<Object> kwList = (java.util.List<Object>) kws;
+
+                java.util.List<String> topKeywords = kwList.stream()
+                        .map(Object::toString)
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .limit(5)
+                        .collect(java.util.stream.Collectors.toList());
+
+                if (!topKeywords.isEmpty()) {
+                    query = String.join(" ", topKeywords);
+                }
+
+            }
+        }
 
         return paperService.searchPapers(query);
 
@@ -90,10 +128,10 @@ public class PaperController {
     }
 
     @PostMapping("/filter")
-public List<PaperResponse> filterPapers(
-        @RequestBody PaperFilterRequest request) {
+    public List<PaperResponse> filterPapers(
+            @RequestBody PaperFilterRequest request) {
 
-    return paperService.filterPapers(request);
+        return paperService.filterPapers(request);
 
-}
+    }
 }

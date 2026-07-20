@@ -8,6 +8,10 @@ class SummaryResponse(BaseModel):
     summary: str
 
 
+class KeywordExtractionResponse(BaseModel):
+    keywords: List[str] = Field(..., description="Important keywords extracted from the abstract")
+
+
 class SimilarityResponse(BaseModel):
     similarity: float
 

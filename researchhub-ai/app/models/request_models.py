@@ -6,6 +6,10 @@ class SummaryRequest(BaseModel):
     abstract: str
 
 
+class KeywordExtractionRequest(BaseModel):
+    userAbstract: str = Field(..., min_length=20, description="The user's research abstract")
+
+
 class SimilarityRequest(BaseModel):
     text1: str
     text2: str

@@ -202,9 +202,7 @@ const ComparePapersPage = () => {
           </Grid>
         )}
 
-        <Box
-          sx={{ mt: 3, display: "flex", justifyContent: "flex-end", gap: 2 }}
-        >
+        <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", gap: 2 }}>
           <Button
             variant="contained"
             disabled={selected.length < 2}
@@ -217,23 +215,10 @@ const ComparePapersPage = () => {
         </Box>
       </Box>
 
-      <Dialog
-        open={dialogOpen}
-        onClose={handleCloseDialog}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>
-          {`User Abstract vs ${dialogPaper ? dialogPaper.title : "Paper"}`}
-        </DialogTitle>
+      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+        <DialogTitle>{`User Abstract vs ${dialogPaper ? dialogPaper.title : "Paper"}`}</DialogTitle>
         <DialogContent dividers>
-          <Box
-            sx={{
-              display: "flex",
-              gap: 3,
-              flexDirection: { xs: "column", md: "row" },
-            }}
-          >
+          <Box sx={{ display: "flex", gap: 3, flexDirection: { xs: "column", md: "row" }, alignItems: "flex-start" }}>
             <Box sx={{ flex: 1 }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1 }}>
                 Your abstract
@@ -244,9 +229,14 @@ const ComparePapersPage = () => {
                   p: 2,
                   borderRadius: 1,
                   border: "1px solid #E5E7EB",
+                  maxHeight: 220,
+                  overflow: "hidden",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 8,
+                  WebkitBoxOrient: "vertical",
                 }}
               >
-                <Typography sx={{ whiteSpace: "pre-wrap", color: "#374151" }}>
+                <Typography sx={{ whiteSpace: "pre-wrap", color: "#374151", overflow: "hidden", textOverflow: "ellipsis", display: "block" }}>
                   {userAbstract || "(no abstract provided)"}
                 </Typography>
               </Box>
@@ -257,148 +247,98 @@ const ComparePapersPage = () => {
                 {dialogPaper ? dialogPaper.title : "Paper"}
               </Typography>
               <Box sx={{ mb: 2 }}>
-                <Typography sx={{ color: "#6B7280" }}>
-                  {dialogPaper?.authors}
-                </Typography>
-                <Typography sx={{ color: "#6B7280" }}>
-                  {dialogPaper?.year}
-                </Typography>
+                <Typography sx={{ color: "#6B7280" }}>{dialogPaper?.authors}</Typography>
+                <Typography sx={{ color: "#6B7280" }}>{dialogPaper?.year}</Typography>
               </Box>
+            </Box>
+          </Box>
 
-              {dialogLoading ? (
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <CircularProgress size={20} />
-                  <Typography>Running novelty check...</Typography>
-                </Stack>
-              ) : dialogError ? (
-                <Typography color="error">{dialogError}</Typography>
-              ) : dialogResult ? (
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                  <Box>
-                    <Typography sx={{ fontWeight: 800, fontSize: "1.5rem" }}>
-                      Innovation Score: {dialogResult.innovationScore ?? "-"}
-                    </Typography>
+          {/* Results: full width below the two columns so it appears under the user abstract */}
+          <Box sx={{ mt: 2 }}>
+            {dialogLoading ? (
+              <Stack direction="row" spacing={1} alignItems="center">
+                <CircularProgress size={20} />
+                <Typography>Running novelty check...</Typography>
+              </Stack>
+            ) : dialogError ? (
+              <Typography color="error">{dialogError}</Typography>
+            ) : dialogResult ? (
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Box sx={{ display: "flex", alignItems: "baseline", gap: 2 }}>
+                  <Typography sx={{ fontWeight: 700 }}>Innovation Score</Typography>
+                  <Typography sx={{ fontWeight: 800, fontSize: "1.5rem", color: "#111827" }}>{dialogResult.innovationScore ?? "-"}</Typography>
+                </Box>
+
+                <Divider />
+
+                <Box>
+                  <Typography sx={{ fontWeight: 700 }}>Semantic similarity</Typography>
+                  <List dense>
+                    <ListItem>
+                      <ListItemText primary={`Highest: ${dialogResult.semanticSimilarity?.highest ?? "-"}`} />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary={`Average: ${dialogResult.semanticSimilarity?.average ?? "-"}`} />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary={`Lowest: ${dialogResult.semanticSimilarity?.lowest ?? "-"}`} />
+                    </ListItem>
+                  </List>
+                </Box>
+
+                <Divider />
+
+                <Box>
+                  <Typography sx={{ fontWeight: 700 }}>Top matches</Typography>
+                  <List>
+                    {(dialogResult.topMatches || []).map((m) => (
+                      <ListItem key={m.paperId}>
+                        <ListItemText primary={m.title} secondary={`Similarity: ${m.similarity} • Year: ${m.year} • Citations: ${m.citationCount}`} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
+
+                <Divider />
+
+                <Box>
+                  <Typography sx={{ fontWeight: 700 }}>Keyword novelty</Typography>
+                  <Typography sx={{ color: "#6B7280" }}>Novelty score: {dialogResult.keywordNovelty?.keywordNoveltyScore ?? "-"}</Typography>
+                  <Box sx={{ mt: 1 }}>
+                    <Typography sx={{ fontWeight: 600 }}>Novel keywords</Typography>
+                    <Typography sx={{ color: "#374151", whiteSpace: "pre-wrap" }}>{(dialogResult.keywordNovelty?.novelKeywords || []).join(", ")}</Typography>
                   </Box>
+                </Box>
 
-                  <Divider />
+                <Divider />
 
-                  <Box>
-                    <Typography sx={{ fontWeight: 700 }}>
-                      Semantic similarity
-                    </Typography>
-                    <List dense>
-                      <ListItem>
-                        <ListItemText
-                          primary={`Highest: ${dialogResult.semanticSimilarity?.highest ?? "-"}`}
-                        />
-                      </ListItem>
-                      <ListItem>
-                        <ListItemText
-                          primary={`Average: ${dialogResult.semanticSimilarity?.average ?? "-"}`}
-                        />
-                      </ListItem>
-                      <ListItem>
-                        <ListItemText
-                          primary={`Lowest: ${dialogResult.semanticSimilarity?.lowest ?? "-"}`}
-                        />
-                      </ListItem>
-                    </List>
-                  </Box>
+                <Box>
+                  <Typography sx={{ fontWeight: 700 }}>Research maturity</Typography>
+                  <Typography>Average year: {dialogResult.researchMaturity?.averageYear ?? "-"}</Typography>
+                  <Typography>Average citations: {dialogResult.researchMaturity?.averageCitationCount ?? "-"}</Typography>
+                  <Typography>Label: {dialogResult.researchMaturity?.maturityLabel ?? "-"}</Typography>
+                </Box>
 
-                  <Divider />
+                <Divider />
 
-                  <Box>
-                    <Typography sx={{ fontWeight: 700 }}>
-                      Top matches
-                    </Typography>
+                <Box>
+                  <Typography sx={{ fontWeight: 700 }}>Report summary</Typography>
+                  <Typography sx={{ mt: 1 }}>{dialogResult.report?.summary}</Typography>
+                  <Box sx={{ mt: 1 }}>
+                    <Typography sx={{ fontWeight: 700 }}>Recommendations</Typography>
                     <List>
-                      {(dialogResult.topMatches || []).map((m) => (
-                        <ListItem key={m.paperId}>
-                          <ListItemText
-                            primary={m.title}
-                            secondary={`Similarity: ${m.similarity} • Year: ${m.year} • Citations: ${m.citationCount}`}
-                          />
+                      {(dialogResult.report?.recommendations || []).map((r, i) => (
+                        <ListItem key={i}>
+                          <ListItemText primary={r} />
                         </ListItem>
                       ))}
                     </List>
                   </Box>
-
-                  <Divider />
-
-                  <Box>
-                    <Typography sx={{ fontWeight: 700 }}>
-                      Keyword novelty
-                    </Typography>
-                    <Typography sx={{ color: "#6B7280" }}>
-                      Novelty score:{" "}
-                      {dialogResult.keywordNovelty?.keywordNoveltyScore ?? "-"}
-                    </Typography>
-                    <Box sx={{ mt: 1 }}>
-                      <Typography sx={{ fontWeight: 600 }}>
-                        Novel keywords
-                      </Typography>
-                      <Typography
-                        sx={{ color: "#374151", whiteSpace: "pre-wrap" }}
-                      >
-                        {(
-                          dialogResult.keywordNovelty?.novelKeywords || []
-                        ).join(", ")}
-                      </Typography>
-                    </Box>
-                  </Box>
-
-                  <Divider />
-
-                  <Box>
-                    <Typography sx={{ fontWeight: 700 }}>
-                      Research maturity
-                    </Typography>
-                    <Typography>
-                      Average year:{" "}
-                      {dialogResult.researchMaturity?.averageYear ?? "-"}
-                    </Typography>
-                    <Typography>
-                      Average citations:{" "}
-                      {dialogResult.researchMaturity?.averageCitationCount ??
-                        "-"}
-                    </Typography>
-                    <Typography>
-                      Label:{" "}
-                      {dialogResult.researchMaturity?.maturityLabel ?? "-"}
-                    </Typography>
-                  </Box>
-
-                  <Divider />
-
-                  <Box>
-                    <Typography sx={{ fontWeight: 700 }}>
-                      Report summary
-                    </Typography>
-                    <Typography sx={{ mt: 1 }}>
-                      {dialogResult.report?.summary}
-                    </Typography>
-                    <Box sx={{ mt: 1 }}>
-                      <Typography sx={{ fontWeight: 700 }}>
-                        Recommendations
-                      </Typography>
-                      <List>
-                        {(dialogResult.report?.recommendations || []).map(
-                          (r, i) => (
-                            <ListItem key={i}>
-                              <ListItemText primary={r} />
-                            </ListItem>
-                          ),
-                        )}
-                      </List>
-                    </Box>
-                  </Box>
                 </Box>
-              ) : (
-                <Typography sx={{ color: "#6B7280" }}>
-                  No result yet.
-                </Typography>
-              )}
-            </Box>
+              </Box>
+            ) : (
+              <Typography sx={{ color: "#6B7280" }}>No result yet.</Typography>
+            )}
           </Box>
         </DialogContent>
         <DialogActions>
